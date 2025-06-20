@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
-import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image } from "lucide-react";
+import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, MoreHorizontal } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface CardComponentProps {
@@ -13,11 +13,11 @@ interface CardComponentProps {
 }
 
 const colorVariants = {
-  blue: "bg-blue-50 border-blue-200",
-  peach: "bg-orange-50 border-orange-200",
-  yellow: "bg-yellow-50 border-yellow-200",
-  mint: "bg-green-50 border-green-200",
-  lavender: "bg-purple-50 border-purple-200",
+  blue: "bg-blue-50 border-blue-200 hover:bg-blue-100",
+  peach: "bg-orange-50 border-orange-200 hover:bg-orange-100",
+  yellow: "bg-yellow-50 border-yellow-200 hover:bg-yellow-100",
+  mint: "bg-green-50 border-green-200 hover:bg-green-100",
+  lavender: "bg-purple-50 border-purple-200 hover:bg-purple-100",
 };
 
 const typeIcons = {
@@ -28,6 +28,7 @@ const typeIcons = {
 
 export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: CardComponentProps) => {
   const [copied, setCopied] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
   const TypeIcon = typeIcons[card.type];
 
   const handleCopy = async () => {
@@ -36,7 +37,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
       setCopied(true);
       toast({
         title: "Copied!",
-        description: "Card copied to clipboard",
+        description: "Card content copied to clipboard",
       });
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -54,14 +55,20 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
     }
   };
 
+  const handleSizeChange = (newSize: "1x1" | "1x2" | "2x1" | "2x2") => {
+    if (onUpdate) {
+      onUpdate({ ...card, size: newSize });
+    }
+  };
+
   const renderContent = () => {
     if (card.type === "image") {
       return (
-        <div className="mb-6 flex-1">
+        <div className="mb-6 flex-1 overflow-hidden">
           <img
             src={card.content}
             alt={card.title}
-            className="w-full h-32 object-cover rounded-xl"
+            className="w-full h-32 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
           />
         </div>
       );
@@ -71,7 +78,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
       return (
         <div className="mb-6 flex-1">
           <div
-            className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-4 rounded-xl border border-white/40 transition-colors"
+            className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-4 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
             onClick={handleLinkClick}
           >
             {card.content}
@@ -83,7 +90,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
 
     return (
       <div className="mb-6 flex-1">
-        <div className="text-gray-700 text-sm bg-white/60 p-4 rounded-xl border border-white/40 line-clamp-3">
+        <div className="text-gray-700 text-sm bg-white/60 p-4 rounded-xl border border-white/40 line-clamp-3 transition-all duration-200 hover:bg-white/80">
           {card.content}
         </div>
       </div>
@@ -93,12 +100,52 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
   return (
     <div 
       className={`
-        h-full rounded-2xl border-2 p-6 shadow-sm transition-all duration-300 flex flex-col
-        hover:shadow-lg hover:-rotate-1 hover:scale-[1.02] transform-gpu
+        h-full rounded-2xl border-2 p-6 shadow-sm transition-all duration-300 flex flex-col cursor-pointer
+        hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
         ${colorVariants[card.color]}
-        ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite]' : ''}
+        ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
+        ${isPressed ? 'scale-95' : ''}
+        active:scale-95
       `}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
     >
+      {/* Edit Mode Controls */}
+      {isEditMode && (
+        <div className="absolute -top-2 -right-2 flex gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
+
+      {/* Size Controls in Edit Mode */}
+      {isEditMode && (
+        <div className="absolute -bottom-2 -right-2 bg-white rounded-full shadow-lg border border-gray-200 p-1">
+          <div className="flex gap-1">
+            {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
+              <button
+                key={size}
+                onClick={() => handleSizeChange(size)}
+                className={`w-6 h-6 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110 ${
+                  card.size === size 
+                    ? "bg-blue-500 text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {size.replace('x', '×')}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <TypeIcon className="w-5 h-5 text-gray-600 flex-shrink-0" />
@@ -107,14 +154,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
           </h3>
         </div>
         {isEditMode && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDelete}
-            className="text-gray-400 hover:text-red-500 p-1 h-auto flex-shrink-0"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <Move className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing" />
         )}
       </div>
 
@@ -124,11 +164,11 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
         <div className="flex gap-2 mt-auto">
           <Button
             onClick={handleCopy}
-            className="flex-1 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-xl h-12 transition-all transform hover:scale-105"
+            className="flex-1 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-xl h-12 transition-all transform hover:scale-105 active:scale-95"
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 mr-2" />
+                <Check className="w-4 h-4 mr-2 animate-bounce" />
                 Copied!
               </>
             ) : (
@@ -143,7 +183,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
             <Button
               onClick={handleLinkClick}
               variant="outline"
-              className="px-4 rounded-xl border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105"
+              className="px-4 rounded-xl border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95"
             >
               <ExternalLink className="w-4 h-4" />
             </Button>
