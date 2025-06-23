@@ -1,77 +1,43 @@
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { CardGrid } from "@/components/CardGrid";
 import { AddCardModal } from "@/components/AddCardModal";
-import { Card } from "@/types/card";
+import { useCards } from "@/hooks/useCards";
+import { useState } from "react";
 
 const Index = () => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [cards, setCards] = useState<Card[]>([
-    {
-      id: "1",
-      title: "Welcome Email Template",
-      content: "Hi there! Welcome to our amazing platform. We're excited to have you on board and can't wait to see what you'll create.",
-      type: "text",
-      color: "blue",
-      size: "2x1",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      title: "Portfolio Website",
-      content: "https://example-portfolio.com",
-      type: "link",
-      color: "peach",
-      size: "1x1",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      title: "Design Inspiration",
-      content: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-      type: "image",
-      color: "mint",
-      size: "1x2",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "4",
-      title: "Quick CSS Reset",
-      content: "* { margin: 0; padding: 0; box-sizing: border-box; }",
-      type: "text",
-      color: "lavender",
-      size: "1x1",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "5",
-      title: "GitHub Profile",
-      content: "https://github.com/username",
-      type: "link",
-      color: "yellow",
-      size: "1x1",
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  const { cards, loading: cardsLoading, addCard, updateCard, deleteCard } = useCards();
 
-  const handleAddCard = (card: Omit<Card, "id" | "createdAt">) => {
-    const newCard: Card = {
-      ...card,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    setCards([newCard, ...cards]);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-lg">{t('auth.loading')}</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const handleAddCard = async (cardData: any) => {
+    await addCard(cardData);
     setIsModalOpen(false);
-  };
-
-  const handleDeleteCard = (id: string) => {
-    setCards(cards.filter(card => card.id !== id));
-  };
-
-  const handleUpdateCard = (updatedCard: Card) => {
-    setCards(cards.map(card => card.id === updatedCard.id ? updatedCard : card));
   };
 
   return (
@@ -82,12 +48,18 @@ const Index = () => {
         onToggleEditMode={() => setIsEditMode(!isEditMode)}
       />
       <main className="container mx-auto px-8 py-8">
-        <CardGrid 
-          cards={cards} 
-          onDeleteCard={handleDeleteCard}
-          isEditMode={isEditMode}
-          onUpdateCard={handleUpdateCard}
-        />
+        {cardsLoading ? (
+          <div className="text-center py-16">
+            <div className="text-lg">{t('auth.loading')}</div>
+          </div>
+        ) : (
+          <CardGrid 
+            cards={cards} 
+            onDeleteCard={deleteCard}
+            isEditMode={isEditMode}
+            onUpdateCard={updateCard}
+          />
+        )}
       </main>
       <AddCardModal
         isOpen={isModalOpen}

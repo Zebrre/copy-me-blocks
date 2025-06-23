@@ -1,0 +1,57 @@
+
+{
+  "app": {
+    "title": "CopyMe",
+    "newCard": "Novo Cartão",
+    "edit": "Editar",
+    "done": "Concluído"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "signOut": "Sair",
+    "signInSubtitle": "Entre na sua conta",
+    "signUpSubtitle": "Crie uma nova conta",
+    "email": "Email",
+    "password": "Senha",
+    "fullName": "Nome Completo",
+    "emailPlaceholder": "Digite seu email",
+    "passwordPlaceholder": "Digite sua senha",
+    "fullNamePlaceholder": "Digite seu nome completo",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "signupSuccess": "Sucesso!",
+    "checkEmail": "Verifique seu email para confirmar sua conta",
+    "unexpectedError": "Ocorreu um erro inesperado",
+    "needAccount": "Não tem conta? Cadastre-se",
+    "haveAccount": "Já tem conta? Entre"
+  },
+  "cards": {
+    "title": "Título",
+    "content": "Conteúdo",
+    "url": "URL",
+    "imageUrl": "URL da Imagem",
+    "type": "Tipo",
+    "text": "Texto",
+    "link": "Link",
+    "image": "Imagem",
+    "color": "Cor do Cartão",
+    "size": "Tamanho",
+    "titlePlaceholder": "Digite o título do cartão...",
+    "textPlaceholder": "Digite o conteúdo do texto...",
+    "linkPlaceholder": "https://exemplo.com",
+    "imagePlaceholder": "https://exemplo.com/imagem.jpg",
+    "addCard": "Adicionar Cartão",
+    "cancel": "Cancelar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "noCards": "Nenhum cartão ainda",
+    "createFirst": "Clique em \"Novo Cartão\" para criar seu primeiro cartão!"
+  },
+  "language": {
+    "select": "Idioma",
+    "en": "English",
+    "pt-BR": "Português (Brasil)",
+    "es": "Español"
+  }
+}

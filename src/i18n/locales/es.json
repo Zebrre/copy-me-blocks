@@ -1,0 +1,57 @@
+
+{
+  "app": {
+    "title": "CopyMe",
+    "newCard": "Nueva Tarjeta",
+    "edit": "Editar",
+    "done": "Listo"
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar Sesión",
+    "signInSubtitle": "Inicia sesión en tu cuenta",
+    "signUpSubtitle": "Crea una nueva cuenta",
+    "email": "Email",
+    "password": "Contraseña",
+    "fullName": "Nombre Completo",
+    "emailPlaceholder": "Ingresa tu email",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "fullNamePlaceholder": "Ingresa tu nombre completo",
+    "loading": "Cargando...",
+    "error": "Error",
+    "signupSuccess": "¡Éxito!",
+    "checkEmail": "Revisa tu email para confirmar tu cuenta",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "needAccount": "¿No tienes cuenta? Regístrate",
+    "haveAccount": "¿Ya tienes cuenta? Inicia sesión"
+  },
+  "cards": {
+    "title": "Título",
+    "content": "Contenido",
+    "url": "URL",
+    "imageUrl": "URL de Imagen",
+    "type": "Tipo",
+    "text": "Texto",
+    "link": "Enlace",
+    "image": "Imagen",
+    "color": "Color de Tarjeta",
+    "size": "Tamaño",
+    "titlePlaceholder": "Ingresa el título de la tarjeta...",
+    "textPlaceholder": "Ingresa el contenido del texto...",
+    "linkPlaceholder": "https://ejemplo.com",
+    "imagePlaceholder": "https://ejemplo.com/imagen.jpg",
+    "addCard": "Agregar Tarjeta",
+    "cancel": "Cancelar",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "noCards": "No hay tarjetas aún",
+    "createFirst": "¡Haz clic en \"Nueva Tarjeta\" para crear tu primera tarjeta!"
+  },
+  "language": {
+    "select": "Idioma",
+    "en": "English",
+    "pt-BR": "Português (Brasil)",
+    "es": "Español"
+  }
+}

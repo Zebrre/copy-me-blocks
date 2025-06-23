@@ -1,7 +1,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Edit, Settings } from "lucide-react";
+import { Plus, Edit, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "./LanguageSelector";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   onNewCard: () => void;
@@ -10,15 +19,24 @@ interface HeaderProps {
 }
 
 export const Header = ({ onNewCard, isEditMode, onToggleEditMode }: HeaderProps) => {
+  const { t } = useTranslation();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
       <div className="container mx-auto px-8 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">CopyMe</h1>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{t('app.title')}</h1>
           </div>
           
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
+            
             <Button
               onClick={onToggleEditMode}
               variant={isEditMode ? "default" : "outline"}
@@ -29,7 +47,7 @@ export const Header = ({ onNewCard, isEditMode, onToggleEditMode }: HeaderProps)
               }`}
             >
               <Edit className="w-4 h-4 mr-2" />
-              {isEditMode ? "Done" : "Edit"}
+              {isEditMode ? t('app.done') : t('app.edit')}
             </Button>
             
             <Button
@@ -37,13 +55,25 @@ export const Header = ({ onNewCard, isEditMode, onToggleEditMode }: HeaderProps)
               className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Card
+              {t('app.newCard')}
             </Button>
             
-            <Avatar className="w-10 h-10 ring-2 ring-gray-100 transition-all hover:ring-gray-200">
-              <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="w-10 h-10 ring-2 ring-gray-100 transition-all hover:ring-gray-200 cursor-pointer">
+                  <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                  <AvatarFallback>
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {t('auth.signOut')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

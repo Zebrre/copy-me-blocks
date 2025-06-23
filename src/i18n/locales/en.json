@@ -1,0 +1,57 @@
+
+{
+  "app": {
+    "title": "CopyMe",
+    "newCard": "New Card",
+    "edit": "Edit",
+    "done": "Done"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "signInSubtitle": "Sign in to your account",
+    "signUpSubtitle": "Create a new account",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "fullNamePlaceholder": "Enter your full name",
+    "loading": "Loading...",
+    "error": "Error",
+    "signupSuccess": "Success!",
+    "checkEmail": "Please check your email to confirm your account",
+    "unexpectedError": "An unexpected error occurred",
+    "needAccount": "Don't have an account? Sign up",
+    "haveAccount": "Already have an account? Sign in"
+  },
+  "cards": {
+    "title": "Title",
+    "content": "Content",
+    "url": "URL",
+    "imageUrl": "Image URL",
+    "type": "Type",
+    "text": "Text",
+    "link": "Link",
+    "image": "Image",
+    "color": "Card Color",
+    "size": "Size",
+    "titlePlaceholder": "Enter card title...",
+    "textPlaceholder": "Enter your text content...",
+    "linkPlaceholder": "https://example.com",
+    "imagePlaceholder": "https://example.com/image.jpg",
+    "addCard": "Add Card",
+    "cancel": "Cancel",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "noCards": "No cards yet",
+    "createFirst": "Click \"New Card\" to create your first card!"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "pt-BR": "Português (Brasil)",
+    "es": "Español"
+  }
+}
