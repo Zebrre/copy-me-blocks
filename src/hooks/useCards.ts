@@ -26,7 +26,21 @@ export const useCards = () => {
 
       if (error) throw error;
 
-      setCards(data || []);
+      // Transform database result to match Card interface
+      const transformedCards: Card[] = (data || []).map(card => ({
+        id: card.id,
+        title: card.title,
+        content: card.content,
+        type: card.type as "text" | "link" | "image",
+        color: card.color as "blue" | "peach" | "yellow" | "mint" | "lavender",
+        size: card.size as "1x1" | "1x2" | "2x1" | "2x2",
+        position: card.position,
+        user_id: card.user_id,
+        created_at: card.created_at,
+        updated_at: card.updated_at,
+      }));
+
+      setCards(transformedCards);
     } catch (error) {
       console.error('Error fetching cards:', error);
       toast({
@@ -54,7 +68,21 @@ export const useCards = () => {
 
       if (error) throw error;
 
-      setCards(prev => [data, ...prev]);
+      // Transform database result to match Card interface
+      const transformedCard: Card = {
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        type: data.type as "text" | "link" | "image",
+        color: data.color as "blue" | "peach" | "yellow" | "mint" | "lavender",
+        size: data.size as "1x1" | "1x2" | "2x1" | "2x2",
+        position: data.position,
+        user_id: data.user_id,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setCards(prev => [transformedCard, ...prev]);
       toast({
         title: 'Success',
         description: 'Card created successfully',
@@ -69,20 +97,41 @@ export const useCards = () => {
     }
   };
 
-  const updateCard = async (id: string, cardData: Partial<Omit<Card, 'id' | 'user_id' | 'created_at' | 'updated_at'>>) => {
+  const updateCard = async (updatedCard: Card) => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from('cards')
-        .update(cardData)
-        .eq('id', id)
+        .update({
+          title: updatedCard.title,
+          content: updatedCard.content,
+          type: updatedCard.type,
+          color: updatedCard.color,
+          size: updatedCard.size,
+          position: updatedCard.position,
+        })
+        .eq('id', updatedCard.id)
         .select()
         .single();
 
       if (error) throw error;
 
-      setCards(prev => prev.map(card => card.id === id ? data : card));
+      // Transform database result to match Card interface
+      const transformedCard: Card = {
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        type: data.type as "text" | "link" | "image",
+        color: data.color as "blue" | "peach" | "yellow" | "mint" | "lavender",
+        size: data.size as "1x1" | "1x2" | "2x1" | "2x2",
+        position: data.position,
+        user_id: data.user_id,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setCards(prev => prev.map(card => card.id === updatedCard.id ? transformedCard : card));
       toast({
         title: 'Success',
         description: 'Card updated successfully',

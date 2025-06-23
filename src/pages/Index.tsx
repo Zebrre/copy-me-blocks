@@ -40,6 +40,10 @@ const Index = () => {
     setIsModalOpen(false);
   };
 
+  const handleUpdateCard = (card: Card) => {
+    updateCard(card);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header 
@@ -57,7 +61,7 @@ const Index = () => {
             cards={cards} 
             onDeleteCard={deleteCard}
             isEditMode={isEditMode}
-            onUpdateCard={updateCard}
+            onUpdateCard={handleUpdateCard}
           />
         )}
       </main>
