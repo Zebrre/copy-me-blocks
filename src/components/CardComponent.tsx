@@ -64,7 +64,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
   const renderContent = () => {
     if (card.type === "image") {
       return (
-        <div className="mb-4 flex-1 overflow-hidden">
+        <div className="mb-3 flex-1 overflow-hidden">
           <img
             src={card.content}
             alt={card.title}
@@ -76,9 +76,9 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
 
     if (card.type === "link") {
       return (
-        <div className="mb-4 flex-1">
+        <div className="mb-3 flex-1">
           <div
-            className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-4 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
+            className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-3 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
             onClick={handleLinkClick}
           >
             {card.content}
@@ -89,8 +89,8 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
     }
 
     return (
-      <div className="mb-4 flex-1">
-        <div className="text-gray-700 text-sm bg-white/60 p-4 rounded-xl border border-white/40 line-clamp-3 transition-all duration-200 hover:bg-white/80">
+      <div className="mb-3 flex-1">
+        <div className="text-gray-700 text-sm bg-white/60 p-3 rounded-xl border border-white/40 line-clamp-3 transition-all duration-200 hover:bg-white/80">
           {card.content}
         </div>
       </div>
@@ -100,7 +100,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-6 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-hidden
+        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-hidden
         hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
@@ -146,46 +146,48 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
         </div>
       )}
 
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <TypeIcon className="w-5 h-5 text-gray-600 flex-shrink-0" />
-          <h3 className="font-semibold text-gray-900 text-lg leading-tight truncate">
+      <div className="flex items-start justify-between mb-3 min-h-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <TypeIcon className="w-4 h-4 text-gray-600 flex-shrink-0" />
+          <h3 className="font-semibold text-gray-900 text-base leading-tight truncate">
             {card.title}
           </h3>
         </div>
         {isEditMode && (
-          <Move className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0" />
+          <Move className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0 ml-2" />
         )}
       </div>
 
       {renderContent()}
 
       {!isEditMode && (
-        <div className="flex gap-2 mt-auto w-full">
+        <div className="flex gap-2 mt-auto pt-2 w-full min-h-0">
           <Button
             onClick={handleCopy}
-            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-xl h-12 transition-all transform hover:scale-105 active:scale-95"
+            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-lg h-10 text-sm transition-all transform hover:scale-105 active:scale-95 px-3"
           >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 mr-2 animate-bounce flex-shrink-0" />
-                <span className="truncate">Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="truncate">Copy</span>
-              </>
-            )}
+            <div className="flex items-center justify-center gap-1.5 min-w-0 w-full">
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 flex-shrink-0 animate-bounce" />
+                  <span className="truncate text-xs sm:text-sm font-medium">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate text-xs sm:text-sm font-medium">Copy</span>
+                </>
+              )}
+            </div>
           </Button>
           
           {card.type === "link" && (
             <Button
               onClick={handleLinkClick}
               variant="outline"
-              className="px-4 flex-shrink-0 rounded-xl border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95"
+              className="px-3 h-10 flex-shrink-0 rounded-lg border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95"
             >
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </Button>
           )}
         </div>
