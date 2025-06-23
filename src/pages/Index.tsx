@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +19,9 @@ const Index = () => {
   const { cards, loading: cardsLoading, addCard, updateCard, deleteCard } = useCards();
 
   useEffect(() => {
+    console.log('Index: Auth state changed', { user, authLoading });
     if (!authLoading && !user) {
+      console.log('Index: Redirecting to auth');
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);

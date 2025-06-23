@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,8 @@ import { Eye, EyeOff } from 'lucide-react';
 
 const Auth = () => {
   const { t } = useTranslation();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,22 +21,46 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Redirect authenticated users
+  useEffect(() => {
+    if (!authLoading && user) {
+      console.log('User is authenticated, redirecting to home');
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted', { isLogin, email });
+    
+    if (!email || !password) {
+      toast({
+        title: t('auth.error'),
+        description: 'Please fill in all fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       let result;
       if (isLogin) {
+        console.log('Attempting login');
         result = await signIn(email, password);
       } else {
+        console.log('Attempting signup');
         result = await signUp(email, password, fullName);
       }
 
+      console.log('Auth result:', result);
+
       if (result.error) {
+        console.error('Auth error:', result.error);
         toast({
           title: t('auth.error'),
-          description: result.error.message,
+          description: result.error.message || 'An error occurred',
           variant: 'destructive',
         });
       } else if (!isLogin) {
@@ -42,8 +68,18 @@ const Auth = () => {
           title: t('auth.signupSuccess'),
           description: t('auth.checkEmail'),
         });
+        // Switch to login mode after successful signup
+        setIsLogin(true);
+        setPassword('');
+      } else {
+        console.log('Login successful, should redirect automatically');
+        toast({
+          title: 'Success',
+          description: 'Login successful!',
+        });
       }
     } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
         title: t('auth.error'),
         description: t('auth.unexpectedError'),
@@ -53,6 +89,15 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
