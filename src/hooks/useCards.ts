@@ -39,7 +39,7 @@ export const useCards = () => {
     }
   };
 
-  const addCard = async (cardData: Omit<Card, 'id' | 'createdAt'>) => {
+  const addCard = async (cardData: Omit<Card, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
     if (!user) return;
 
     try {
@@ -48,7 +48,6 @@ export const useCards = () => {
         .insert([{
           ...cardData,
           user_id: user.id,
-          created_at: new Date().toISOString(),
         }])
         .select()
         .single();
@@ -70,16 +69,13 @@ export const useCards = () => {
     }
   };
 
-  const updateCard = async (id: string, cardData: Partial<Card>) => {
+  const updateCard = async (id: string, cardData: Partial<Omit<Card, 'id' | 'user_id' | 'created_at' | 'updated_at'>>) => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from('cards')
-        .update({
-          ...cardData,
-          updated_at: new Date().toISOString(),
-        })
+        .update(cardData)
         .eq('id', id)
         .select()
         .single();

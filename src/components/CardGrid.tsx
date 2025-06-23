@@ -1,6 +1,7 @@
 
 import { CardComponent } from "@/components/CardComponent";
 import { Card } from "@/types/card";
+import { useTranslation } from "react-i18next";
 
 interface CardGridProps {
   cards: Card[];
@@ -17,12 +18,14 @@ const gridSizeClasses = {
 };
 
 export const CardGrid = ({ cards, onDeleteCard, isEditMode = false, onUpdateCard }: CardGridProps) => {
+  const { t } = useTranslation();
+
   if (cards.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="text-gray-400 text-lg mb-2 animate-fade-in">No cards yet</div>
+        <div className="text-gray-400 text-lg mb-2 animate-fade-in">{t('cards.noCards')}</div>
         <div className="text-gray-500 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          Click "New Card" to create your first card!
+          {t('cards.createFirst')}
         </div>
       </div>
     );

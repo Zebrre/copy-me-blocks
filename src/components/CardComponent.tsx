@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
 import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, MoreHorizontal } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface CardComponentProps {
   card: Card;
@@ -27,6 +28,7 @@ const typeIcons = {
 };
 
 export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: CardComponentProps) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const TypeIcon = typeIcons[card.type];
@@ -36,7 +38,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
       await navigator.clipboard.writeText(card.content);
       setCopied(true);
       toast({
-        title: "Copied!",
+        title: t('cards.copied'),
         description: "Card content copied to clipboard",
       });
       setTimeout(() => setCopied(false), 2000);
@@ -170,12 +172,12 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 flex-shrink-0 animate-bounce" />
-                  <span className="truncate text-xs sm:text-sm font-medium">Copied!</span>
+                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copied')}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate text-xs sm:text-sm font-medium">Copy</span>
+                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copy')}</span>
                 </>
               )}
             </div>

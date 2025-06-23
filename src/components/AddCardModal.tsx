@@ -13,11 +13,12 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardSize } from "@/types/card";
 import { FileText, Link, Image } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AddCardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (card: Omit<Card, "id" | "createdAt">) => void;
+  onSubmit: (card: Omit<Card, "id" | "created_at" | "updated_at" | "user_id">) => void;
 }
 
 const colorOptions = [
@@ -36,6 +37,7 @@ const sizeOptions = [
 ];
 
 export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) => {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [type, setType] = useState<"text" | "link" | "image">("text");
@@ -76,23 +78,23 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Add New Card</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{t('cards.addCard')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t('cards.title')}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter card title..."
+              placeholder={t('cards.titlePlaceholder')}
               className="w-full rounded-xl"
             />
           </div>
 
           <div className="space-y-3">
-            <Label>Type</Label>
+            <Label>{t('cards.type')}</Label>
             <RadioGroup
               value={type}
               onValueChange={(value) => setType(value as "text" | "link" | "image")}
@@ -102,21 +104,21 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
                 <RadioGroupItem value="text" id="text" />
                 <Label htmlFor="text" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Text
+                  {t('cards.text')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="link" id="link" />
                 <Label htmlFor="link" className="flex items-center gap-2">
                   <Link className="w-4 h-4" />
-                  Link
+                  {t('cards.link')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="image" id="image" />
                 <Label htmlFor="image" className="flex items-center gap-2">
                   <Image className="w-4 h-4" />
-                  Image
+                  {t('cards.image')}
                 </Label>
               </div>
             </RadioGroup>
@@ -124,7 +126,7 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
 
           <div className="space-y-2">
             <Label htmlFor="content">
-              {type === "text" ? "Content" : type === "link" ? "URL" : "Image URL"}
+              {type === "text" ? t('cards.content') : type === "link" ? t('cards.url') : t('cards.imageUrl')}
             </Label>
             <Textarea
               id="content"
@@ -132,17 +134,17 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
               onChange={(e) => setContent(e.target.value)}
               placeholder={
                 type === "text"
-                  ? "Enter your text content..."
+                  ? t('cards.textPlaceholder')
                   : type === "link"
-                  ? "https://example.com"
-                  : "https://example.com/image.jpg"
+                  ? t('cards.linkPlaceholder')
+                  : t('cards.imagePlaceholder')
               }
               className="w-full min-h-24 rounded-xl"
             />
           </div>
 
           <div className="space-y-3">
-            <Label>Card Size</Label>
+            <Label>{t('cards.size')}</Label>
             <div className="grid grid-cols-2 gap-3">
               {sizeOptions.map((option) => (
                 <button
@@ -163,7 +165,7 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
           </div>
 
           <div className="space-y-3">
-            <Label>Card Color</Label>
+            <Label>{t('cards.color')}</Label>
             <div className="flex gap-3">
               {colorOptions.map((option) => (
                 <button
@@ -190,14 +192,14 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
               onClick={handleClose}
               className="flex-1 rounded-xl"
             >
-              Cancel
+              {t('cards.cancel')}
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-[#2563EB] hover:bg-[#1d4ed8] rounded-xl"
               disabled={!title.trim() || !content.trim()}
             >
-              Add Card
+              {t('cards.addCard')}
             </Button>
           </div>
         </form>
