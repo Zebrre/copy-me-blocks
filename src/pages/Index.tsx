@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +7,7 @@ import { CardGrid } from "@/components/CardGrid";
 import { AddCardModal } from "@/components/AddCardModal";
 import { useCards } from "@/hooks/useCards";
 import { useState } from "react";
+import { Card } from "@/types/card";
 
 const Index = () => {
   const { user, loading: authLoading } = useAuth();
