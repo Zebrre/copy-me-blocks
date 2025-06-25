@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
-import { CardGrid } from "@/components/CardGrid";
-import { AddCardModal } from "@/components/AddCardModal";
+import { DragDropCardGrid } from "@/components/DragDropCardGrid";
+import { EditableCardModal } from "@/components/EditableCardModal";
 import { useCards } from "@/hooks/useCards";
 import { useOptimisticCards } from "@/hooks/useOptimisticCards";
 import { useState } from "react";
@@ -17,6 +17,7 @@ const Index = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCard, setEditingCard] = useState<Card | null>(null);
   const { 
     cards: serverCards, 
     loading: cardsLoading, 
@@ -63,12 +64,43 @@ const Index = () => {
     setIsModalOpen(false);
   };
 
-  const handleUpdateCard = (card: Card) => {
-    optimisticUpdateCard(card);
+  const handleUpdateCard = async (card: Card) => {
+    if (editingCard) {
+      // Update existing card with new data
+      await optimisticUpdateCard({ ...editingCard, ...card });
+      setEditingCard(null);
+      setIsModalOpen(false);
+    } else {
+      // Just update card properties (like size)
+      optimisticUpdateCard(card);
+    }
   };
 
   const handleDeleteCard = (cardId: string) => {
     optimisticDeleteCard(cardId);
+  };
+
+  const handleEditCard = (card: Card) => {
+    setEditingCard(card);
+    setIsModalOpen(true);
+  };
+
+  const handleReorderCards = async (reorderedCards: Card[]) => {
+    // Update positions and send to server
+    const cardsWithPositions = reorderedCards.map((card, index) => ({
+      ...card,
+      position: index
+    }));
+    
+    // Update each card with new position
+    for (const card of cardsWithPositions) {
+      await optimisticUpdateCard(card);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCard(null);
   };
 
   return (
@@ -79,19 +111,22 @@ const Index = () => {
         onToggleEditMode={() => setIsEditMode(!isEditMode)}
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <CardGrid 
+        <DragDropCardGrid 
           cards={optimisticCards} 
           onDeleteCard={handleDeleteCard}
           isEditMode={isEditMode}
           onUpdateCard={handleUpdateCard}
+          onReorderCards={handleReorderCards}
           isLoading={cardsLoading}
           getCardLoadingState={getCardLoadingState}
+          onEditCard={handleEditCard}
         />
       </main>
-      <AddCardModal
+      <EditableCardModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAddCard}
+        onClose={handleCloseModal}
+        onSubmit={editingCard ? handleUpdateCard : handleAddCard}
+        editingCard={editingCard}
       />
     </div>
   );

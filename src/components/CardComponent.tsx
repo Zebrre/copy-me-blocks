@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
-import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, Loader2 } from "lucide-react";
+import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, Loader2, Edit2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +12,7 @@ interface CardComponentProps {
   isEditMode?: boolean;
   onUpdate?: (card: Card) => void;
   isLoading?: boolean;
+  onEdit?: () => void;
 }
 
 const colorVariants = {
@@ -33,7 +34,8 @@ export const CardComponent = ({
   onDelete, 
   isEditMode = false, 
   onUpdate,
-  isLoading = false 
+  isLoading = false,
+  onEdit 
 }: CardComponentProps) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -71,6 +73,12 @@ export const CardComponent = ({
   const handleSizeChange = (newSize: "1x1" | "1x2" | "2x1" | "2x2") => {
     if (onUpdate && !isLoading) {
       onUpdate({ ...card, size: newSize });
+    }
+  };
+
+  const handleDoubleClick = () => {
+    if (!isEditMode && onEdit) {
+      onEdit();
     }
   };
 
@@ -125,6 +133,7 @@ export const CardComponent = ({
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
+      onDoubleClick={handleDoubleClick}
     >
       {/* Loading Overlay */}
       {isLoading && (
@@ -136,6 +145,15 @@ export const CardComponent = ({
       {/* Edit Mode Controls */}
       {isEditMode && (
         <div className="absolute -top-2 -right-2 flex gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit?.()}
+            disabled={isLoading}
+            className="w-8 h-8 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+          >
+            <Edit2 className="w-4 h-4" />
+          </Button>
           <Button
             variant="ghost"
             size="sm"
