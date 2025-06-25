@@ -31,10 +31,10 @@ interface DragDropCardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "col-span-1 row-span-1",
-  "1x2": "col-span-1 row-span-2", 
-  "2x1": "col-span-2 row-span-1",
-  "2x2": "col-span-2 row-span-2",
+  "1x1": "col-span-1 row-span-1", // Square - Default
+  "1x2": "col-span-1 row-span-2", // Tall rectangle 
+  "2x1": "col-span-2 row-span-1", // Wide rectangle
+  "2x2": "col-span-2 row-span-2", // Large square
 };
 
 export const DragDropCardGrid = ({ 
@@ -73,7 +73,7 @@ export const DragDropCardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[200px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[240px]">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -99,7 +99,7 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[200px] transition-all duration-300 ${
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[240px] transition-all duration-300 ${
           isEditMode ? 'gap-8 p-4' : 'gap-6'
         }`}>
           {cards.map((card, index) => (

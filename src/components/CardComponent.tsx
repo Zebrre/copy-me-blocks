@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
@@ -72,7 +71,8 @@ export const CardComponent = ({
 
   const handleSizeChange = (newSize: "1x1" | "1x2" | "2x1" | "2x2") => {
     if (onUpdate && !isLoading) {
-      onUpdate({ ...card, size: newSize });
+      const updatedCard = { ...card, size: newSize };
+      onUpdate(updatedCard);
     }
   };
 
@@ -142,7 +142,7 @@ export const CardComponent = ({
         </div>
       )}
 
-      {/* Edit Mode Controls - Repositioned for better spacing */}
+      {/* Edit Mode Controls */}
       {isEditMode && (
         <>
           {/* Top Controls - Edit and Delete */}
@@ -181,7 +181,10 @@ export const CardComponent = ({
               {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
                 <button
                   key={size}
-                  onClick={() => handleSizeChange(size)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSizeChange(size);
+                  }}
                   disabled={isLoading}
                   className={`w-7 h-7 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
                     card.size === size 
