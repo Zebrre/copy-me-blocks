@@ -122,7 +122,7 @@ export const CardComponent = ({
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-hidden
+        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-visible
         hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
@@ -142,50 +142,60 @@ export const CardComponent = ({
         </div>
       )}
 
-      {/* Edit Mode Controls */}
+      {/* Edit Mode Controls - Repositioned for better spacing */}
       {isEditMode && (
-        <div className="absolute -top-2 -right-2 flex gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit?.()}
-            disabled={isLoading}
-            className="w-8 h-8 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
-          >
-            <Edit2 className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDelete}
-            disabled={isLoading}
-            className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Size Controls in Edit Mode */}
-      {isEditMode && (
-        <div className="absolute -bottom-2 -right-2 bg-white rounded-full shadow-lg border border-gray-200 p-1">
-          <div className="flex gap-1">
-            {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
-              <button
-                key={size}
-                onClick={() => handleSizeChange(size)}
-                disabled={isLoading}
-                className={`w-6 h-6 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
-                  card.size === size 
-                    ? "bg-blue-500 text-white" 
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {size.replace('x', '×')}
-              </button>
-            ))}
+        <>
+          {/* Top Controls - Edit and Delete */}
+          <div className="absolute -top-3 -right-3 flex gap-2 z-20">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit?.()}
+              disabled={isLoading}
+              className="w-7 h-7 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+            >
+              <Edit2 className="w-3 h-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDelete}
+              disabled={isLoading}
+              className="w-7 h-7 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+            >
+              <Trash2 className="w-3 h-3" />
+            </Button>
           </div>
-        </div>
+
+          {/* Drag Handle - Top Left */}
+          <div className="absolute -top-2 -left-2 z-20">
+            <div className="w-6 h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing transition-colors">
+              <Move className="w-3 h-3" />
+            </div>
+          </div>
+
+          {/* Size Controls - Bottom Right with improved design */}
+          <div className="absolute -bottom-3 -right-3 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-20">
+            <div className="text-xs text-gray-500 mb-1 text-center font-medium">Size</div>
+            <div className="grid grid-cols-2 gap-1">
+              {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => handleSizeChange(size)}
+                  disabled={isLoading}
+                  className={`w-7 h-7 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
+                    card.size === size 
+                      ? "bg-blue-500 text-white shadow-sm" 
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                  title={`Resize to ${size.replace('x', '×')}`}
+                >
+                  {size.replace('x', '×')}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
       <div className="flex items-start justify-between mb-3 min-h-0">
@@ -195,9 +205,6 @@ export const CardComponent = ({
             {card.title}
           </h3>
         </div>
-        {isEditMode && (
-          <Move className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0 ml-2" />
-        )}
       </div>
 
       {renderContent()}

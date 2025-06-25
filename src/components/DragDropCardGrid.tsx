@@ -99,11 +99,15 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[200px] transition-all duration-300">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[200px] transition-all duration-300 ${
+          isEditMode ? 'gap-8 p-4' : 'gap-6'
+        }`}>
           {cards.map((card, index) => (
             <div 
               key={card.id} 
-              className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in`}
+              className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in ${
+                isEditMode ? 'edit-mode-card' : ''
+              }`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <DraggableCard

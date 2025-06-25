@@ -179,6 +179,16 @@
   .glass-morphism {
     @apply bg-white/60 backdrop-blur-sm border border-white/40;
   }
+
+  /* Improved spacing for edit mode cards */
+  .edit-mode-card {
+    @apply relative;
+    margin: 12px;
+  }
+
+  .edit-mode-card-grid {
+    padding: 12px;
+  }
 }
 
 /* Smooth scrolling */
