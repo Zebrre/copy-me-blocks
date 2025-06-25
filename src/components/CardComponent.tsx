@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
-import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, MoreHorizontal } from "lucide-react";
+import { Copy, ExternalLink, Trash2, Check, FileText, Link, Image, Move, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +11,7 @@ interface CardComponentProps {
   onDelete: () => void;
   isEditMode?: boolean;
   onUpdate?: (card: Card) => void;
+  isLoading?: boolean;
 }
 
 const colorVariants = {
@@ -27,13 +28,21 @@ const typeIcons = {
   image: Image,
 };
 
-export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: CardComponentProps) => {
+export const CardComponent = ({ 
+  card, 
+  onDelete, 
+  isEditMode = false, 
+  onUpdate,
+  isLoading = false 
+}: CardComponentProps) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const [copyLoading, setCopyLoading] = useState(false);
   const TypeIcon = typeIcons[card.type];
 
   const handleCopy = async () => {
+    setCopyLoading(true);
     try {
       await navigator.clipboard.writeText(card.content);
       setCopied(true);
@@ -48,6 +57,8 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
         description: "Please try again",
         variant: "destructive",
       });
+    } finally {
+      setCopyLoading(false);
     }
   };
 
@@ -58,7 +69,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
   };
 
   const handleSizeChange = (newSize: "1x1" | "1x2" | "2x1" | "2x2") => {
-    if (onUpdate) {
+    if (onUpdate && !isLoading) {
       onUpdate({ ...card, size: newSize });
     }
   };
@@ -71,6 +82,7 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
             src={card.content}
             alt={card.title}
             className="w-full h-32 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
+            loading="lazy"
           />
         </div>
       );
@@ -107,12 +119,20 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
         ${isPressed ? 'scale-95' : ''}
+        ${isLoading ? 'opacity-70' : ''}
         active:scale-95
       `}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
     >
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10">
+          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+        </div>
+      )}
+
       {/* Edit Mode Controls */}
       {isEditMode && (
         <div className="absolute -top-2 -right-2 flex gap-1">
@@ -120,7 +140,8 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+            disabled={isLoading}
+            className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -135,7 +156,8 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
               <button
                 key={size}
                 onClick={() => handleSizeChange(size)}
-                className={`w-6 h-6 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110 ${
+                disabled={isLoading}
+                className={`w-6 h-6 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110 disabled:opacity-50 ${
                   card.size === size 
                     ? "bg-blue-500 text-white" 
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -166,10 +188,16 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
         <div className="flex gap-2 mt-auto pt-2 w-full min-h-0">
           <Button
             onClick={handleCopy}
-            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-lg h-10 text-sm transition-all transform hover:scale-105 active:scale-95 px-3"
+            disabled={copyLoading || isLoading}
+            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-lg h-10 text-sm transition-all transform hover:scale-105 active:scale-95 px-3 disabled:opacity-50"
           >
             <div className="flex items-center justify-center gap-1.5 min-w-0 w-full">
-              {copied ? (
+              {copyLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 flex-shrink-0 animate-spin" />
+                  <span className="truncate text-xs sm:text-sm font-medium">Copying...</span>
+                </>
+              ) : copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 flex-shrink-0 animate-bounce" />
                   <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copied')}</span>
@@ -187,7 +215,8 @@ export const CardComponent = ({ card, onDelete, isEditMode = false, onUpdate }: 
             <Button
               onClick={handleLinkClick}
               variant="outline"
-              className="px-3 h-10 flex-shrink-0 rounded-lg border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95"
+              disabled={isLoading}
+              className="px-3 h-10 flex-shrink-0 rounded-lg border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50"
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </Button>
