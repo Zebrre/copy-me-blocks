@@ -31,10 +31,10 @@ interface DragDropCardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "col-span-1 row-span-1",
-  "1x2": "col-span-1 row-span-2", 
-  "2x1": "col-span-2 row-span-1",
-  "2x2": "col-span-2 row-span-2",
+  "1x1": "bento-span-1x1",
+  "1x2": "bento-span-1x2", 
+  "2x1": "bento-span-2x1",
+  "2x2": "bento-span-2x2",
 };
 
 export const DragDropCardGrid = ({ 
@@ -73,7 +73,7 @@ export const DragDropCardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="bento-grid">
+      <div className="bento-grid-container">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -99,7 +99,7 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`bento-grid ${isEditMode ? 'bento-grid-edit' : ''}`}>
+        <div className={`bento-grid-container ${isEditMode ? 'bento-grid-edit' : ''}`}>
           {cards.map((card, index) => (
             <div 
               key={card.id} 
