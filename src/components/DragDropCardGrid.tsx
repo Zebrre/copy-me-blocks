@@ -31,10 +31,10 @@ interface DragDropCardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "bento-span-1x1",
-  "1x2": "bento-span-1x2", 
-  "2x1": "bento-span-2x1",
-  "2x2": "bento-span-2x2",
+  "1x1": "col-span-1 row-span-1", // Square - Default
+  "1x2": "col-span-1 row-span-2", // Tall rectangle 
+  "2x1": "col-span-2 row-span-1", // Wide rectangle
+  "2x2": "col-span-2 row-span-2", // Large square
 };
 
 export const DragDropCardGrid = ({ 
@@ -61,29 +61,19 @@ export const DragDropCardGrid = ({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    console.log('Drag end event:', { activeId: active.id, overId: over?.id });
 
-    if (active.id !== over?.id && over?.id) {
+    if (active.id !== over?.id) {
       const oldIndex = cards.findIndex((card) => card.id === active.id);
-      const newIndex = cards.findIndex((card) => card.id === over.id);
-      
-      console.log('Reordering cards:', { oldIndex, newIndex });
+      const newIndex = cards.findIndex((card) => card.id === over?.id);
       
       const newCards = arrayMove(cards, oldIndex, newIndex);
-      console.log('New card order:', newCards.map(c => ({ id: c.id, title: c.title })));
-      
       onReorderCards?.(newCards);
     }
   };
 
-  const handleUpdateCard = (updatedCard: Card) => {
-    console.log('Card update in DragDropCardGrid:', updatedCard);
-    onUpdateCard?.(updatedCard);
-  };
-
   if (isLoading && cards.length === 0) {
     return (
-      <div className="bento-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[240px]">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -109,18 +99,22 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className="bento-grid">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[240px] transition-all duration-300 ${
+          isEditMode ? 'gap-8 p-4' : 'gap-6'
+        }`}>
           {cards.map((card, index) => (
             <div 
               key={card.id} 
-              className={`${gridSizeClasses[card.size]} animate-fade-in`}
+              className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in ${
+                isEditMode ? 'edit-mode-card' : ''
+              }`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <DraggableCard
                 card={card}
                 onDelete={() => onDeleteCard(card.id)}
                 isEditMode={isEditMode}
-                onUpdate={handleUpdateCard}
+                onUpdate={onUpdateCard}
                 isLoading={getCardLoadingState?.(card.id) || false}
                 onEdit={() => onEditCard?.(card)}
               />
