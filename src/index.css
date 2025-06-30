@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -179,22 +180,41 @@
     @apply bg-white/60 backdrop-blur-sm border border-white/40;
   }
 
-  /* Bento grid system with consistent spacing */
-  .edit-mode-card {
-    @apply relative;
-    margin: 8px;
-  }
-
-  .edit-mode-card-grid {
-    padding: 8px;
-  }
-
-  /* Enhanced grid system for bento layout */
+  /* Bento grid system - main grid container */
   .bento-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
     grid-auto-rows: 240px;
+    gap: 1rem;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Responsive bento grid */
+  @media (min-width: 640px) {
+    .bento-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .bento-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  /* Edit mode spacing */
+  .bento-grid-edit {
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  /* Individual card container in grid */
+  .bento-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
   }
 
   /* Card interaction states */
@@ -212,6 +232,50 @@
 
   .card-clickable:focus-visible {
     @apply ring-2 ring-blue-500 ring-opacity-75 outline-none;
+  }
+
+  /* Grid size classes for proper spanning */
+  .col-span-1 {
+    grid-column: span 1;
+  }
+
+  .col-span-2 {
+    grid-column: span 2;
+  }
+
+  .row-span-1 {
+    grid-row: span 1;
+  }
+
+  .row-span-2 {
+    grid-row: span 2;
+  }
+
+  /* Card aspect ratio maintenance */
+  .bento-card > * {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: inherit;
+  }
+
+  /* 1x1 cards maintain square aspect */
+  .col-span-1.row-span-1 {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* 1x2 cards are vertical rectangles */
+  .col-span-1.row-span-2 {
+    aspect-ratio: 1 / 2;
+  }
+
+  /* 2x1 cards are horizontal rectangles */
+  .col-span-2.row-span-1 {
+    aspect-ratio: 2 / 1;
+  }
+
+  /* 2x2 cards are large squares */
+  .col-span-2.row-span-2 {
+    aspect-ratio: 1 / 1;
   }
 }
 

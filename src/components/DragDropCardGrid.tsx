@@ -31,10 +31,10 @@ interface DragDropCardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "col-span-1 row-span-1", // Square - Default (240px × 240px)
-  "1x2": "col-span-1 row-span-2", // Tall rectangle (240px × 480px)
-  "2x1": "col-span-2 row-span-1", // Wide rectangle (480px × 240px) 
-  "2x2": "col-span-2 row-span-2", // Large square (480px × 480px)
+  "1x1": "col-span-1 row-span-1",
+  "1x2": "col-span-1 row-span-2", 
+  "2x1": "col-span-2 row-span-1",
+  "2x2": "col-span-2 row-span-2",
 };
 
 export const DragDropCardGrid = ({ 
@@ -73,7 +73,7 @@ export const DragDropCardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-[240px]">
+      <div className="bento-grid">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -99,15 +99,11 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[240px] transition-all duration-300 ${
-          isEditMode ? 'gap-6 p-3' : 'gap-4'
-        }`}>
+        <div className={`bento-grid ${isEditMode ? 'bento-grid-edit' : ''}`}>
           {cards.map((card, index) => (
             <div 
               key={card.id} 
-              className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in group ${
-                isEditMode ? 'edit-mode-card' : ''
-              }`}
+              className={`bento-card ${gridSizeClasses[card.size]} animate-fade-in`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <DraggableCard
