@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
@@ -38,7 +39,6 @@ export const CardComponent = ({
 }: CardComponentProps) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
   const [copyLoading, setCopyLoading] = useState(false);
   const TypeIcon = typeIcons[card.type];
 
@@ -129,23 +129,17 @@ export const CardComponent = ({
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col relative overflow-visible
-        ${isEditMode ? '' : 'cursor-pointer hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu'}
+        bento-card relative overflow-visible
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
-        ${isPressed ? 'scale-95' : ''}
         ${isLoading ? 'opacity-70' : ''}
         ${copied ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
-        active:scale-95
       `}
       onClick={handleCardClick}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
       onDoubleClick={handleDoubleClick}
-      role={isEditMode ? "button" : "button"}
+      role="button"
       tabIndex={isEditMode ? -1 : 0}
-      aria-label={isEditMode ? undefined : `Copy ${card.title}: ${card.content}`}
+      aria-label={isEditMode ? undefined : `Copiar conteúdo: ${card.title}`}
       onKeyDown={(e) => {
         if (!isEditMode && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();

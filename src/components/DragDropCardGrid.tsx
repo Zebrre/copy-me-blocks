@@ -83,7 +83,7 @@ export const DragDropCardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="bento-grid-container">
+      <div className="bento-grid">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -109,11 +109,11 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`bento-grid-container ${isEditMode ? 'bento-grid-edit' : ''}`}>
+        <div className="bento-grid">
           {cards.map((card, index) => (
             <div 
               key={card.id} 
-              className={`bento-card ${gridSizeClasses[card.size]} animate-fade-in`}
+              className={`${gridSizeClasses[card.size]} animate-fade-in`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <DraggableCard
