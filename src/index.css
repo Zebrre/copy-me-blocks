@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -180,14 +179,39 @@
     @apply bg-white/60 backdrop-blur-sm border border-white/40;
   }
 
-  /* Improved spacing for edit mode cards */
+  /* Bento grid system with consistent spacing */
   .edit-mode-card {
     @apply relative;
-    margin: 12px;
+    margin: 8px;
   }
 
   .edit-mode-card-grid {
-    padding: 12px;
+    padding: 8px;
+  }
+
+  /* Enhanced grid system for bento layout */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    grid-auto-rows: 240px;
+  }
+
+  /* Card interaction states */
+  .card-clickable {
+    @apply cursor-pointer transition-all duration-300;
+  }
+
+  .card-clickable:hover {
+    @apply shadow-xl transform-gpu hover:scale-[1.02] hover:-rotate-1;
+  }
+
+  .card-clickable:active {
+    @apply scale-95;
+  }
+
+  .card-clickable:focus-visible {
+    @apply ring-2 ring-blue-500 ring-opacity-75 outline-none;
   }
 }
 

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
@@ -42,7 +43,19 @@ export const CardComponent = ({
   const [copyLoading, setCopyLoading] = useState(false);
   const TypeIcon = typeIcons[card.type];
 
-  const handleCopy = async () => {
+  const handleCardClick = async (e: React.MouseEvent) => {
+    // Don't trigger copy if clicking on edit mode controls
+    if (isEditMode || (e.target as HTMLElement).closest('.edit-controls')) {
+      return;
+    }
+
+    // Handle link cards differently
+    if (card.type === "link") {
+      window.open(card.content, "_blank");
+      return;
+    }
+
+    // Copy functionality for text and image cards
     setCopyLoading(true);
     try {
       await navigator.clipboard.writeText(card.content);
@@ -60,12 +73,6 @@ export const CardComponent = ({
       });
     } finally {
       setCopyLoading(false);
-    }
-  };
-
-  const handleLinkClick = () => {
-    if (card.type === "link") {
-      window.open(card.content, "_blank");
     }
   };
 
@@ -99,12 +106,9 @@ export const CardComponent = ({
     if (card.type === "link") {
       return (
         <div className="mb-3 flex-1">
-          <div
-            className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-3 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
-            onClick={handleLinkClick}
-          >
-            {card.content}
-            <ExternalLink className="w-3 h-3 inline ml-2" />
+          <div className="text-blue-600 break-all text-sm bg-white/60 p-3 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm flex items-center gap-2">
+            <span className="flex-1">{card.content}</span>
+            <ExternalLink className="w-3 h-3 flex-shrink-0" />
           </div>
         </div>
       );
@@ -122,60 +126,87 @@ export const CardComponent = ({
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-visible
-        hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
+        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col relative overflow-visible
+        ${isEditMode ? '' : 'cursor-pointer hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu'}
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
         ${isPressed ? 'scale-95' : ''}
         ${isLoading ? 'opacity-70' : ''}
+        ${copied ? 'ring-2 ring-green-400 ring-opacity-75' : ''}
         active:scale-95
       `}
+      onClick={handleCardClick}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
       onDoubleClick={handleDoubleClick}
+      role={isEditMode ? "button" : "button"}
+      tabIndex={isEditMode ? -1 : 0}
+      aria-label={isEditMode ? undefined : `Copy ${card.title}: ${card.content}`}
+      onKeyDown={(e) => {
+        if (!isEditMode && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleCardClick(e as any);
+        }
+      }}
     >
       {/* Loading Overlay */}
-      {isLoading && (
+      {(isLoading || copyLoading) && (
         <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
         </div>
       )}
 
+      {/* Copy Success Indicator */}
+      {copied && (
+        <div className="absolute inset-0 bg-green-50/80 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10">
+          <div className="flex items-center gap-2 text-green-700">
+            <Check className="w-5 h-5 animate-bounce" />
+            <span className="font-medium">{t('cards.copied')}</span>
+          </div>
+        </div>
+      )}
+
       {/* Edit Mode Controls */}
       {isEditMode && (
-        <>
+        <div className="edit-controls">
           {/* Top Controls - Edit and Delete */}
-          <div className="absolute -top-3 -right-3 flex gap-2 z-20">
+          <div className="absolute -top-2 -right-2 flex gap-1 z-20">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onEdit?.()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.();
+              }}
               disabled={isLoading}
-              className="w-7 h-7 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+              className="w-6 h-6 p-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
             >
               <Edit2 className="w-3 h-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={onDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
               disabled={isLoading}
-              className="w-7 h-7 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
+              className="w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
             >
               <Trash2 className="w-3 h-3" />
             </Button>
           </div>
 
           {/* Drag Handle - Top Left */}
-          <div className="absolute -top-2 -left-2 z-20">
-            <div className="w-6 h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing transition-colors">
-              <Move className="w-3 h-3" />
+          <div className="absolute -top-1 -left-1 z-20">
+            <div className="w-5 h-5 bg-gray-600 hover:bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing transition-colors">
+              <Move className="w-2 h-2" />
             </div>
           </div>
 
-          {/* Size Controls - Bottom Right with improved design */}
-          <div className="absolute -bottom-3 -right-3 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-20">
+          {/* Size Controls - Bottom Right */}
+          <div className="absolute -bottom-2 -right-2 bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-20">
             <div className="text-xs text-gray-500 mb-1 text-center font-medium">Size</div>
             <div className="grid grid-cols-2 gap-1">
               {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
@@ -186,7 +217,7 @@ export const CardComponent = ({
                     handleSizeChange(size);
                   }}
                   disabled={isLoading}
-                  className={`w-7 h-7 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
+                  className={`w-6 h-6 text-xs font-semibold rounded transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
                     card.size === size 
                       ? "bg-blue-500 text-white shadow-sm" 
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -198,7 +229,7 @@ export const CardComponent = ({
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       <div className="flex items-start justify-between mb-3 min-h-0">
@@ -212,43 +243,12 @@ export const CardComponent = ({
 
       {renderContent()}
 
+      {/* Interactive hint for non-edit mode */}
       {!isEditMode && (
-        <div className="flex gap-2 mt-auto pt-2 w-full min-h-0">
-          <Button
-            onClick={handleCopy}
-            disabled={copyLoading || isLoading}
-            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-lg h-10 text-sm transition-all transform hover:scale-105 active:scale-95 px-3 disabled:opacity-50"
-          >
-            <div className="flex items-center justify-center gap-1.5 min-w-0 w-full">
-              {copyLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 flex-shrink-0 animate-spin" />
-                  <span className="truncate text-xs sm:text-sm font-medium">Copying...</span>
-                </>
-              ) : copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 flex-shrink-0 animate-bounce" />
-                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copied')}</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copy')}</span>
-                </>
-              )}
-            </div>
-          </Button>
-          
-          {card.type === "link" && (
-            <Button
-              onClick={handleLinkClick}
-              variant="outline"
-              disabled={isLoading}
-              className="px-3 h-10 flex-shrink-0 rounded-lg border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Button>
-          )}
+        <div className="mt-auto pt-2">
+          <div className="text-xs text-gray-500 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+            {card.type === "link" ? "Click to open" : "Click to copy"}
+          </div>
         </div>
       )}
     </div>
