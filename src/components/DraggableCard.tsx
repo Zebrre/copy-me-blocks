@@ -28,13 +28,24 @@ export const DraggableCard = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: card.id });
+  } = useSortable({ 
+    id: card.id,
+    disabled: !isEditMode // Only enable dragging in edit mode
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
   };
+
+  console.log('DraggableCard render:', { 
+    cardId: card.id, 
+    isEditMode, 
+    isDragging,
+    hasListeners: !!listeners 
+  });
 
   return (
     <div
@@ -42,7 +53,7 @@ export const DraggableCard = ({
       style={style}
       {...attributes}
       {...(isEditMode ? listeners : {})}
-      className={`transition-all duration-200 ${isDragging ? 'z-50' : ''}`}
+      className={`transition-all duration-200 ${isDragging ? 'z-50 cursor-grabbing' : ''}`}
     >
       <CardComponent
         card={card}

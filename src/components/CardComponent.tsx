@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/types/card";
@@ -77,9 +76,13 @@ export const CardComponent = ({
   };
 
   const handleSizeChange = (newSize: "1x1" | "1x2" | "2x1" | "2x2") => {
+    console.log('Size change requested:', newSize, 'for card:', card.id);
     if (onUpdate && !isLoading) {
       const updatedCard = { ...card, size: newSize };
+      console.log('Updating card with new size:', updatedCard);
       onUpdate(updatedCard);
+    } else {
+      console.log('Update blocked - onUpdate:', !!onUpdate, 'isLoading:', isLoading);
     }
   };
 
@@ -206,7 +209,7 @@ export const CardComponent = ({
           </div>
 
           {/* Size Controls - Bottom Right */}
-          <div className="absolute -bottom-2 -right-2 bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-20">
+          <div className="absolute -bottom-2 -right-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-20">
             <div className="text-xs text-gray-500 mb-1 text-center font-medium">Size</div>
             <div className="grid grid-cols-2 gap-1">
               {(["1x1", "1x2", "2x1", "2x2"] as const).map((size) => (
@@ -214,10 +217,11 @@ export const CardComponent = ({
                   key={size}
                   onClick={(e) => {
                     e.stopPropagation();
+                    console.log('Size button clicked:', size);
                     handleSizeChange(size);
                   }}
                   disabled={isLoading}
-                  className={`w-6 h-6 text-xs font-semibold rounded transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
+                  className={`w-8 h-6 text-xs font-semibold rounded transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center ${
                     card.size === size 
                       ? "bg-blue-500 text-white shadow-sm" 
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"

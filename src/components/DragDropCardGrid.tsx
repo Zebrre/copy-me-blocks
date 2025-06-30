@@ -61,14 +61,24 @@ export const DragDropCardGrid = ({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    console.log('Drag end event:', { activeId: active.id, overId: over?.id });
 
-    if (active.id !== over?.id) {
+    if (active.id !== over?.id && over?.id) {
       const oldIndex = cards.findIndex((card) => card.id === active.id);
-      const newIndex = cards.findIndex((card) => card.id === over?.id);
+      const newIndex = cards.findIndex((card) => card.id === over.id);
+      
+      console.log('Reordering cards:', { oldIndex, newIndex });
       
       const newCards = arrayMove(cards, oldIndex, newIndex);
+      console.log('New card order:', newCards.map(c => ({ id: c.id, title: c.title })));
+      
       onReorderCards?.(newCards);
     }
+  };
+
+  const handleUpdateCard = (updatedCard: Card) => {
+    console.log('Card update in DragDropCardGrid:', updatedCard);
+    onUpdateCard?.(updatedCard);
   };
 
   if (isLoading && cards.length === 0) {
@@ -110,7 +120,7 @@ export const DragDropCardGrid = ({
                 card={card}
                 onDelete={() => onDeleteCard(card.id)}
                 isEditMode={isEditMode}
-                onUpdate={onUpdateCard}
+                onUpdate={handleUpdateCard}
                 isLoading={getCardLoadingState?.(card.id) || false}
                 onEdit={() => onEditCard?.(card)}
               />
