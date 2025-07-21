@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardSize } from "@/types/card";
 import { FileText, Link, Image } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ImageUpload } from "./ImageUpload";
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -128,19 +129,27 @@ export const AddCardModal = ({ isOpen, onClose, onSubmit }: AddCardModalProps) =
             <Label htmlFor="content">
               {type === "text" ? t('cards.content') : type === "link" ? t('cards.url') : t('cards.imageUrl')}
             </Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={
-                type === "text"
-                  ? t('cards.textPlaceholder')
-                  : type === "link"
-                  ? t('cards.linkPlaceholder')
-                  : t('cards.imagePlaceholder')
-              }
-              className="w-full min-h-24 rounded-xl"
-            />
+            {type === "image" ? (
+              <ImageUpload
+                onImageSelect={setContent}
+                currentImage={content}
+                onClear={() => setContent("")}
+              />
+            ) : (
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder={
+                  type === "text"
+                    ? t('cards.textPlaceholder')
+                    : type === "link"
+                    ? t('cards.linkPlaceholder')
+                    : t('cards.imagePlaceholder')
+                }
+                className="w-full min-h-24 rounded-xl"
+              />
+            )}
           </div>
 
           <div className="space-y-3">

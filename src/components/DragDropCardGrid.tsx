@@ -73,7 +73,7 @@ export const DragDropCardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[240px]">
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gridAutoRows: '200px' }}>
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -99,9 +99,13 @@ export const DragDropCardGrid = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[240px] transition-all duration-300 ${
-          isEditMode ? 'gap-8 p-4' : 'gap-6'
-        }`}>
+        <div 
+          className={`grid transition-all duration-300 ${isEditMode ? 'gap-8 p-4' : 'gap-4'}`}
+          style={{ 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+            gridAutoRows: '200px' 
+          }}
+        >
           {cards.map((card, index) => (
             <div 
               key={card.id} 
