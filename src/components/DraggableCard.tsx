@@ -41,17 +41,18 @@ export const DraggableCard = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...(isEditMode ? listeners : {})}
-      className={`transition-all duration-200 ${isDragging ? 'z-50' : ''}`}
+      className={`transition-all duration-200 ${isDragging ? 'z-50' : ''} ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
-      <CardComponent
-        card={card}
-        onDelete={onDelete}
-        isEditMode={isEditMode}
-        onUpdate={onUpdate}
-        isLoading={isLoading}
-        onEdit={onEdit}
-      />
+      <div {...(isEditMode ? listeners : {})}>
+        <CardComponent
+          card={card}
+          onDelete={onDelete}
+          isEditMode={isEditMode}
+          onUpdate={onUpdate}
+          isLoading={isLoading}
+          onEdit={onEdit}
+        />
+      </div>
     </div>
   );
 };

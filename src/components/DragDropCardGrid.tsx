@@ -102,8 +102,8 @@ export const DragDropCardGrid = ({
         <div 
           className={`grid transition-all duration-300 ${isEditMode ? 'gap-8 p-4' : 'gap-4'}`}
           style={{ 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-            gridAutoRows: '200px' 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+            gridAutoRows: 'minmax(200px, auto)' 
           }}
         >
           {cards.map((card, index) => (
