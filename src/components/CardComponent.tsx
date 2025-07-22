@@ -40,10 +40,20 @@ export const CardComponent = ({
   const [copied, setCopied] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [copyLoading, setCopyLoading] = useState(false);
+  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
   const TypeIcon = typeIcons[card.type];
 
-  const handleCopy = async () => {
+  const handleCardClick = async (e: React.MouseEvent) => {
+    // Don't copy if in edit mode or clicking on edit controls
+    if (isEditMode) return;
+    
+    // Don't copy if clicking on links or buttons
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[data-no-copy]')) return;
+    
     setCopyLoading(true);
+    setShowCopyFeedback(true);
+    
     try {
       await navigator.clipboard.writeText(card.content);
       setCopied(true);
@@ -51,19 +61,24 @@ export const CardComponent = ({
         title: t('cards.copied'),
         description: "Card content copied to clipboard",
       });
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        setCopied(false);
+        setShowCopyFeedback(false);
+      }, 2000);
     } catch (error) {
       toast({
         title: "Failed to copy",
         description: "Please try again",
         variant: "destructive",
       });
+      setShowCopyFeedback(false);
     } finally {
       setCopyLoading(false);
     }
   };
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click (copy)
     if (card.type === "link") {
       window.open(card.content, "_blank");
     }
@@ -102,6 +117,7 @@ export const CardComponent = ({
           <div
             className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-3 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
             onClick={handleLinkClick}
+            data-no-copy="true"
           >
             {card.content}
             <ExternalLink className="w-3 h-3 inline ml-2" />
@@ -122,18 +138,22 @@ export const CardComponent = ({
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col cursor-pointer relative overflow-visible
+        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col relative overflow-visible
+        ${isEditMode ? 'cursor-default' : 'cursor-pointer'}
         hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
         ${colorVariants[card.color]}
         ${isEditMode ? 'animate-[wiggle_0.5s_ease-in-out_infinite] hover:animate-none' : ''}
         ${isPressed ? 'scale-95' : ''}
         ${isLoading ? 'opacity-70' : ''}
-        active:scale-95
+        ${!isEditMode ? 'active:scale-95' : ''}
+        ${showCopyFeedback ? 'animate-pulse' : ''}
       `}
-      onMouseDown={() => setIsPressed(true)}
+      onClick={handleCardClick}
+      onMouseDown={() => !isEditMode && setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
       onDoubleClick={handleDoubleClick}
+      title={!isEditMode ? "Click to copy content" : undefined}
     >
       {/* Loading Overlay */}
       {isLoading && (
@@ -141,7 +161,19 @@ export const CardComponent = ({
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
         </div>
       )}
-
+      
+      {/* Copy Feedback Overlay */}
+      {showCopyFeedback && (
+        <div className="absolute inset-0 bg-green-500/20 backdrop-blur-sm rounded-2xl flex items-center justify-center z-20 animate-fade-in">
+          <div className="bg-white rounded-full p-3 shadow-lg animate-scale-in">
+            {copied ? (
+              <Check className="w-8 h-8 text-green-500 animate-bounce" />
+            ) : (
+              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            )}
+          </div>
+        </div>
+      )}
       {/* Edit Mode Controls */}
       {isEditMode && (
         <>
@@ -212,43 +244,13 @@ export const CardComponent = ({
 
       {renderContent()}
 
+      {/* Copy Hint for non-edit mode */}
       {!isEditMode && (
-        <div className="flex gap-2 mt-auto pt-2 w-full min-h-0">
-          <Button
-            onClick={handleCopy}
-            disabled={copyLoading || isLoading}
-            className="flex-1 min-w-0 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium rounded-lg h-10 text-sm transition-all transform hover:scale-105 active:scale-95 px-3 disabled:opacity-50"
-          >
-            <div className="flex items-center justify-center gap-1.5 min-w-0 w-full">
-              {copyLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 flex-shrink-0 animate-spin" />
-                  <span className="truncate text-xs sm:text-sm font-medium">Copying...</span>
-                </>
-              ) : copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 flex-shrink-0 animate-bounce" />
-                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copied')}</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate text-xs sm:text-sm font-medium">{t('cards.copy')}</span>
-                </>
-              )}
-            </div>
-          </Button>
-          
-          {card.type === "link" && (
-            <Button
-              onClick={handleLinkClick}
-              variant="outline"
-              disabled={isLoading}
-              className="px-3 h-10 flex-shrink-0 rounded-lg border-white/40 bg-white/60 hover:bg-white/80 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Button>
-          )}
+        <div className="mt-auto pt-2 flex items-center justify-center">
+          <div className="text-xs text-gray-500 opacity-70 flex items-center gap-1">
+            <Copy className="w-3 h-3" />
+            <span>Click to copy</span>
+          </div>
         </div>
       )}
     </div>
