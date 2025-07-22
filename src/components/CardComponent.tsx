@@ -100,11 +100,11 @@ export const CardComponent = ({
   const renderContent = () => {
     if (card.type === "image") {
       return (
-        <div className="mb-3 flex-1 overflow-hidden">
+        <div className="mb-3 flex-1 overflow-hidden min-h-0">
           <img
             src={card.content}
             alt={card.title}
-            className="w-full h-32 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
+            className="w-full h-full object-cover rounded-xl transition-transform duration-300 hover:scale-105"
             loading="lazy"
           />
         </div>
@@ -113,7 +113,7 @@ export const CardComponent = ({
 
     if (card.type === "link") {
       return (
-        <div className="mb-3 flex-1">
+        <div className="mb-3 flex-1 overflow-hidden min-h-0">
           <div
             className="text-blue-600 hover:text-blue-800 cursor-pointer break-all text-sm bg-white/60 p-3 rounded-xl border border-white/40 transition-all duration-200 hover:bg-white/80 hover:shadow-sm"
             onClick={handleLinkClick}
@@ -127,8 +127,8 @@ export const CardComponent = ({
     }
 
     return (
-      <div className="mb-3 flex-1">
-        <div className="text-gray-700 text-sm bg-white/60 p-3 rounded-xl border border-white/40 line-clamp-3 transition-all duration-200 hover:bg-white/80">
+      <div className="mb-3 flex-1 overflow-hidden min-h-0">
+        <div className="text-gray-700 text-sm bg-white/60 p-3 rounded-xl border border-white/40 line-clamp-4 transition-all duration-200 hover:bg-white/80 h-full overflow-y-auto">
           {card.content}
         </div>
       </div>
@@ -138,7 +138,7 @@ export const CardComponent = ({
   return (
     <div 
       className={`
-        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col relative overflow-visible
+        h-full w-full rounded-2xl border-2 p-4 shadow-sm transition-all duration-300 flex flex-col relative overflow-hidden aspect-square
         ${isEditMode ? 'cursor-default' : 'cursor-pointer'}
         hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu
         ${colorVariants[card.color]}
@@ -146,7 +146,6 @@ export const CardComponent = ({
         ${isPressed ? 'scale-95' : ''}
         ${isLoading ? 'opacity-70' : ''}
         ${!isEditMode ? 'active:scale-95' : ''}
-        ${showCopyFeedback ? 'animate-pulse' : ''}
       `}
       onClick={handleCardClick}
       onMouseDown={() => !isEditMode && setIsPressed(true)}
@@ -164,13 +163,14 @@ export const CardComponent = ({
       
       {/* Copy Feedback Overlay */}
       {showCopyFeedback && (
-        <div className="absolute inset-0 bg-green-500/20 backdrop-blur-sm rounded-2xl flex items-center justify-center z-20 animate-fade-in">
-          <div className="bg-white rounded-full p-3 shadow-lg animate-scale-in">
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className={`transition-all duration-200 ${copied ? 'animate-scale-in' : ''}`}>
             {copied ? (
-              <Check className="w-8 h-8 text-green-500 animate-bounce" />
-            ) : (
-              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-            )}
+              <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 flex items-center gap-2">
+                <Check className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-700">Copied!</span>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
@@ -246,8 +246,8 @@ export const CardComponent = ({
 
       {/* Copy Hint for non-edit mode */}
       {!isEditMode && (
-        <div className="mt-auto pt-2 flex items-center justify-center">
-          <div className="text-xs text-gray-500 opacity-70 flex items-center gap-1">
+        <div className="mt-auto pt-2 flex items-center justify-center flex-shrink-0">
+          <div className="text-xs text-gray-400 opacity-60 flex items-center gap-1">
             <Copy className="w-3 h-3" />
             <span>Click to copy</span>
           </div>
