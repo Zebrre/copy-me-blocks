@@ -31,10 +31,10 @@ interface DragDropCardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "col-span-1 row-span-1", // Square - Default
-  "1x2": "col-span-1 row-span-2", // Tall rectangle 
-  "2x1": "col-span-2 row-span-1", // Wide rectangle
-  "2x2": "col-span-2 row-span-2", // Large square
+  "1x1": "bento-card-1x1",
+  "1x2": "bento-card-1x2", 
+  "2x1": "bento-card-2x1",
+  "2x2": "bento-card-2x2",
 };
 
 export const DragDropCardGrid = ({ 
@@ -51,7 +51,7 @@ export const DragDropCardGrid = ({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 1,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -62,18 +62,20 @@ export const DragDropCardGrid = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
+    if (active.id !== over?.id && over) {
       const oldIndex = cards.findIndex((card) => card.id === active.id);
-      const newIndex = cards.findIndex((card) => card.id === over?.id);
+      const newIndex = cards.findIndex((card) => card.id === over.id);
       
-      const newCards = arrayMove(cards, oldIndex, newIndex);
-      onReorderCards?.(newCards);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newCards = arrayMove(cards, oldIndex, newIndex);
+        onReorderCards?.(newCards);
+      }
     }
   };
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[240px]">
+      <div className="bento-grid">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -98,27 +100,22 @@ export const DragDropCardGrid = ({
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={cards.map(card => card.id)} strategy={rectSortingStrategy}>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[240px] transition-all duration-300 ${
-          isEditMode ? 'gap-8 p-4' : 'gap-6'
+      <SortableContext items={cards.map(card => card.id)}>
+        <div className={`bento-grid ${
+          isEditMode ? 'bento-grid-edit' : ''
         }`}>
           {cards.map((card, index) => (
-            <div 
-              key={card.id} 
-              className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in ${
-                isEditMode ? 'edit-mode-card' : ''
-              }`}
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              <DraggableCard
-                card={card}
-                onDelete={() => onDeleteCard(card.id)}
-                isEditMode={isEditMode}
-                onUpdate={onUpdateCard}
-                isLoading={getCardLoadingState?.(card.id) || false}
-                onEdit={() => onEditCard?.(card)}
-              />
-            </div>
+            <DraggableCard
+              key={card.id}
+              card={card}
+              onDelete={() => onDeleteCard(card.id)}
+              isEditMode={isEditMode}
+              onUpdate={onUpdateCard}
+              isLoading={getCardLoadingState?.(card.id) || false}
+              onEdit={() => onEditCard?.(card)}
+              className={`${gridSizeClasses[card.size]} animate-fade-in`}
+              customStyle={{ animationDelay: `${index * 0.05}s` }}
+            />
           ))}
         </div>
       </SortableContext>

@@ -105,6 +105,20 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-6 {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 /* Apple-inspired animations and micro-interactions */
@@ -155,6 +169,86 @@
 }
 
 @layer components {
+  /* Bento Grid - Base */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 160px;
+    gap: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Bento Grid - Responsive */
+  @media (max-width: 768px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 140px;
+      gap: 12px;
+      padding: 16px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .bento-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-auto-rows: 180px;
+      gap: 20px;
+    }
+  }
+
+  /* Edit Mode */
+  .bento-grid-edit {
+    gap: 24px;
+    padding: 32px;
+  }
+
+  /* Native Drag and Drop */
+  .bento-grid [draggable="true"] {
+    cursor: grab;
+  }
+
+  .bento-grid [draggable="true"]:active {
+    cursor: grabbing;
+  }
+
+  .bento-grid [draggable="true"]:hover {
+    transform: scale(1.02);
+  }
+
+  /* Card Sizes - Bento Style */
+  .bento-card-1x1 {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .bento-card-1x2 {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .bento-card-2x1 {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+
+  .bento-card-2x2 {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* Mobile Adjustments */
+  @media (max-width: 768px) {
+    .bento-card-1x2,
+    .bento-card-2x1,
+    .bento-card-2x2 {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+  }
+
   .card-hover {
     @apply transition-all duration-300 hover:shadow-xl hover:-rotate-1 hover:scale-[1.02] transform-gpu;
   }
@@ -180,6 +274,36 @@
     @apply bg-white/60 backdrop-blur-sm border border-white/40;
   }
 
+  /* Bento Card */
+  .bento-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px;
+    padding: 20px;
+    position: relative;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bento-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .bento-card:hover::before {
+    opacity: 1;
+  }
+
   /* Improved spacing for edit mode cards */
   .edit-mode-card {
     @apply relative;
@@ -188,6 +312,38 @@
 
   .edit-mode-card-grid {
     padding: 12px;
+  }
+
+  /* Enhanced gradients for better Bento aesthetics */
+  .bg-gradient-to-br {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* DND Kit specific styles */
+  .dnd-kit-dragging {
+    z-index: 999;
+    opacity: 0.8;
+    transform: rotate(5deg);
+  }
+
+  /* Ensure drag handles are properly positioned */
+  [data-dnd-kit-drag-handle] {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  [data-dnd-kit-drag-handle]:active {
+    cursor: grabbing;
   }
 }
 

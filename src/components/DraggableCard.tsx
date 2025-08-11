@@ -11,6 +11,8 @@ interface DraggableCardProps {
   onUpdate?: (card: Card) => void;
   isLoading?: boolean;
   onEdit?: () => void;
+  className?: string;
+  customStyle?: React.CSSProperties;
 }
 
 export const DraggableCard = ({ 
@@ -19,7 +21,9 @@ export const DraggableCard = ({
   isEditMode = false, 
   onUpdate,
   isLoading = false,
-  onEdit
+  onEdit,
+  className = '',
+  customStyle
 }: DraggableCardProps) => {
   const {
     attributes,
@@ -28,21 +32,26 @@ export const DraggableCard = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: card.id });
+  } = useSortable({ 
+    id: card.id,
+    disabled: !isEditMode
+  });
 
   const style = {
+    ...customStyle,
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition,
     opacity: isDragging ? 0.5 : 1,
-  };
+    zIndex: isDragging ? 1000 : 1,
+    position: isDragging ? 'relative' : 'static',
+  } as React.CSSProperties;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...(isEditMode ? listeners : {})}
-      className={`transition-all duration-200 ${isDragging ? 'z-50' : ''}`}
+      className={`${className} ${isDragging ? 'z-50 shadow-2xl dnd-kit-dragging' : ''} transition-shadow duration-200`}
     >
       <CardComponent
         card={card}
@@ -51,6 +60,7 @@ export const DraggableCard = ({
         onUpdate={onUpdate}
         isLoading={isLoading}
         onEdit={onEdit}
+        dragHandleProps={isEditMode ? listeners : undefined}
       />
     </div>
   );

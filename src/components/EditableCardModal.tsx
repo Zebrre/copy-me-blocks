@@ -31,10 +31,10 @@ const colorOptions = [
 ];
 
 const sizeOptions = [
-  { value: "1x1", label: "1×1", className: "w-6 h-6" },
-  { value: "1x2", label: "1×2", className: "w-6 h-8" },
-  { value: "2x1", label: "2×1", className: "w-8 h-6" },
-  { value: "2x2", label: "2×2", className: "w-8 h-8" },
+  { value: "1x1", label: "1×1", className: "w-6 h-6", description: "Square" },
+  { value: "1x2", label: "1×2", className: "w-8 h-6", description: "Wide" },
+  { value: "2x1", label: "2×1", className: "w-6 h-8", description: "Tall" },
+  { value: "2x2", label: "2×2", className: "w-8 h-8", description: "Large" },
 ];
 
 export const EditableCardModal = ({ isOpen, onClose, onSubmit, editingCard }: EditableCardModalProps) => {
@@ -172,14 +172,16 @@ export const EditableCardModal = ({ isOpen, onClose, onSubmit, editingCard }: Ed
                     key={option.value}
                     type="button"
                     onClick={() => setSize(option.value as CardSize)}
-                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all text-sm ${
+                    className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all text-xs ${
                       size === option.value
-                        ? "border-[#2563EB] bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? "border-[#2563EB] bg-blue-50 ring-2 ring-blue-200/50"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     }`}
+                    title={option.description}
                   >
-                    <div className={`${option.className} bg-gray-300 rounded`} />
-                    <span>{option.label}</span>
+                    <div className={`${option.className} bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg shadow-sm`} />
+                    <span className="font-medium">{option.label}</span>
+                    <span className="text-gray-500 text-[10px]">{option.description}</span>
                   </button>
                 ))}
               </div>

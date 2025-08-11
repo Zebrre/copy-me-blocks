@@ -14,10 +14,10 @@ interface CardGridProps {
 }
 
 const gridSizeClasses = {
-  "1x1": "col-span-1 row-span-1",
-  "1x2": "col-span-1 row-span-2", 
-  "2x1": "col-span-2 row-span-1",
-  "2x2": "col-span-2 row-span-2",
+  "1x1": "bento-card-1x1",
+  "1x2": "bento-card-1x2",
+  "2x1": "bento-card-2x1",
+  "2x2": "bento-card-2x2",
 };
 
 export const CardGrid = ({ 
@@ -32,7 +32,7 @@ export const CardGrid = ({
 
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[200px]">
+      <div className="bento-grid">
         {Array.from({ length: 8 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
@@ -52,11 +52,11 @@ export const CardGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[200px] transition-all duration-300">
+    <div className="bento-grid">
       {cards.map((card, index) => (
         <div 
           key={card.id} 
-          className={`${gridSizeClasses[card.size]} transition-all duration-300 animate-fade-in`}
+          className={`${gridSizeClasses[card.size]} animate-fade-in`}
           style={{ animationDelay: `${index * 0.05}s` }}
         >
           <CardComponent
