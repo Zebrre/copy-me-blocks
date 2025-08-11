@@ -46,7 +46,8 @@
     "copy": "Copiar",
     "copied": "¡Copiado!",
     "noCards": "No hay tarjetas aún",
-    "createFirst": "¡Haz clic en \"Nueva Tarjeta\" para crear tu primera tarjeta!"
+    "createFirst": "¡Haz clic en \"Nueva Tarjeta\" para crear tu primera tarjeta!",
+    "editCard": "Editar Tarjeta"
   },
   "language": {
     "select": "Idioma",

@@ -51,7 +51,7 @@ export const DraggableCard = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`${className} ${isDragging ? 'z-50 shadow-2xl dnd-kit-dragging' : ''} transition-shadow duration-200`}
+      className={`${className} ${isDragging ? 'z-50 shadow-2xl' : ''} transition-shadow duration-200`}
     >
       <CardComponent
         card={card}
